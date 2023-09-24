@@ -1,7 +1,7 @@
 {
     "module_id": "erh:filtered-camera",
     "visibility": "public",
-    "url": "https://github.com/erh/filtered-camera",
+    "url": "https://github.com/erh/filtered_camera",
     "description": "a filtered camera",
     "models": [
         {
