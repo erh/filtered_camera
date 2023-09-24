@@ -10,3 +10,5 @@ lint:
 
 module: filtered-camera
 	tar czf module.tar.gz filtered-camera
+
+all: module test
