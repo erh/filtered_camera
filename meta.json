@@ -1,0 +1,13 @@
+{
+    "module_id": "erh:filtered_camera",
+    "visibility": "public",
+    "url": "https://github.com/erh/filtered_camera",
+    "description": "a filtered camera",
+    "models": [
+        {
+            "api": "rdk:component:camera",
+            "model": "erh:camera:filtered_camera"
+        }
+    ],
+    "entrypoint": "filtered_camera"
+}
