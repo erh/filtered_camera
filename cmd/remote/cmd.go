@@ -6,13 +6,9 @@ import (
 
 	"github.com/edaniels/golog"
 
-	"go.viam.com/rdk/components/camera"
-	"go.viam.com/rdk/components/camera/rtsp"
 	"go.viam.com/rdk/config"
-	"go.viam.com/rdk/resource"
 	robotimpl "go.viam.com/rdk/robot/impl"
 	"go.viam.com/rdk/robot/web"
-	"go.viam.com/rdk/utils"
 
 	_ "github.com/erh/filtered_camera"
 )
@@ -26,18 +22,16 @@ func main() {
 func realMain() error {
 
 	ctx := context.Background()
-	logger := golog.NewDevelopmentLogger("client")
+	logger := golog.NewDevelopmentLogger("remotetest")
 
-	netconfig := config.NetworkConfig{}
-	netconfig.BindAddress = "0.0.0.0:8083"
-
-	if err := netconfig.Validate(""); err != nil {
+	conf, err := config.ReadLocalConfig(ctx, os.Args[1], logger)
+	if err != nil {
 		return err
 	}
 
-	conf := &config.Config{
-		Network: netconfig,
-		Components: []resource.Config{},
+	conf.Network.BindAddress = "0.0.0.0:8082"
+	if err := conf.Network.Validate(""); err != nil {
+		return err
 	}
 
 	myRobot, err := robotimpl.New(ctx, conf, logger)
