@@ -10,7 +10,7 @@ import (
 	robotimpl "go.viam.com/rdk/robot/impl"
 	"go.viam.com/rdk/robot/web"
 
-	_ "github.com/erh/filtered_camera"
+	_ "github.com/erh/filtered-camera"
 )
 
 func main() {

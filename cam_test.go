@@ -1,4 +1,4 @@
-package filtered_camera
+package filtered-camera
 
 import (
 	"context"

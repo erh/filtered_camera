@@ -8,7 +8,7 @@ import (
 	"go.viam.com/rdk/components/camera"
 	"go.viam.com/rdk/module"
 
-	"github.com/erh/filtered_camera"
+	"github.com/erh/filtered-camera"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func realMain() error {
 		return err
 	}
 
-	err = myMod.AddModelFromRegistry(ctx, camera.API, filtered_camera.Model)
+	err = myMod.AddModelFromRegistry(ctx, camera.API, filtered-camera.Model)
 	if err != nil {
 		return err
 	}

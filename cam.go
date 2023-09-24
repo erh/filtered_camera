@@ -1,4 +1,4 @@
-package filtered_camera
+package filtered-camera
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 	"go.viam.com/utils"
 )
 
-var Model = resource.ModelNamespace("erh").WithFamily("camera").WithModel("filtered_camera")
+var Model = resource.ModelNamespace("erh").WithFamily("camera").WithModel("filtered-camera")
 
 type Config struct {
 	Camera string

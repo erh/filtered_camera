@@ -1,6 +1,6 @@
 
-filtered_camera: *.go cmd/module/*.go
-	go build -o filtered_camera cmd/module/cmd.go
+filtered-camera: *.go cmd/module/*.go
+	go build -o filtered-camera cmd/module/cmd.go
 
 test:
 	go test
@@ -8,5 +8,5 @@ test:
 lint:
 	gofmt -w -s .
 
-module: filtered_camera
-	tar czf module.tar.gz filtered_camera
+module: filtered-camera
+	tar czf module.tar.gz filtered-camera

@@ -1,4 +1,4 @@
-module github.com/erh/filtered_camera
+module github.com/erh/filtered-camera
 
 go 1.19
 
