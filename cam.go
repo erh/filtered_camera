@@ -8,6 +8,8 @@ import (
 
 	"go.viam.com/rdk/components/camera"
 	"go.viam.com/rdk/resource"
+
+	"go.viam.com/utils"
 )
 
 var Model = resource.ModelNamespace("erh").WithFamily("camera").WithModel("filtered_camera")
@@ -15,6 +17,21 @@ var Model = resource.ModelNamespace("erh").WithFamily("camera").WithModel("filte
 type Config struct {
 	Camera string
 	Vision string
+
+	Classifications map[string]float64
+	Objects map[string]float64
+}
+
+func (cfg *Config) Validate(path string) ([]string, error) {
+	if cfg.Camera == "" {
+		return nil, utils.NewConfigValidationFieldRequiredError(path, "camera")
+	}
+
+	if cfg.Vision == "" {
+		return nil, utils.NewConfigValidationFieldRequiredError(path, "vision")
+	}
+
+	return []string{cfg.Camera, cfg.Vision}, nil
 }
 
 func init() {
