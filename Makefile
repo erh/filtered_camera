@@ -7,3 +7,6 @@ test:
 
 lint:
 	gofmt -w -s .
+
+module: filtered_camera
+	tar czf module.tar.gz filtered_camera
