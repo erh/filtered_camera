@@ -5,6 +5,8 @@ import (
 	"image"
 	"testing"
 
+	"github.com/edaniels/golog"
+
 	"go.viam.com/rdk/resource"
 	viz "go.viam.com/rdk/vision"
 	"go.viam.com/rdk/vision/classification"
@@ -85,12 +87,15 @@ var (
 )
 
 func TestShouldSend(t *testing.T) {
+	logger := golog.NewTestLogger(t)
+
 	fc := &filteredCamera{
 		conf: &Config{
 			Classifications: map[string]float64{"a": .8},
 			Objects:         map[string]float64{"b": .8},
 		},
-		vis: &dummyVisionService{},
+		logger: logger,
+		vis:    &dummyVisionService{},
 	}
 
 	res, err := fc.shouldSend(context.Background(), d)

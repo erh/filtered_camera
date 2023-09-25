@@ -97,7 +97,7 @@ func init() {
 				return nil, err
 			}
 
-			fc := &filteredCamera{name: conf.ResourceName(), conf: newConf}
+			fc := &filteredCamera{name: conf.ResourceName(), conf: newConf, logger: logger}
 
 			fc.cam, err = camera.FromDependencies(deps, newConf.Camera)
 			if err != nil {
@@ -118,8 +118,9 @@ type filteredCamera struct {
 	resource.AlwaysRebuild
 	resource.TriviallyCloseable
 
-	name resource.Name
-	conf *Config
+	name   resource.Name
+	conf   *Config
+	logger golog.Logger
 
 	cam camera.Camera
 	vis vision.Service
@@ -207,6 +208,7 @@ func (fc *filteredCamera) shouldSend(ctx context.Context, img image.Image) (bool
 		}
 
 		if fc.conf.keepClassifications(res) {
+			fc.logger.Infof("keeping image with classifications %v", res)
 			return true, nil
 		}
 	}
@@ -218,6 +220,7 @@ func (fc *filteredCamera) shouldSend(ctx context.Context, img image.Image) (bool
 		}
 
 		if fc.conf.keepObjects(res) {
+			fc.logger.Infof("keeping image with objects %v", res)
 			return true, nil
 		}
 	}
