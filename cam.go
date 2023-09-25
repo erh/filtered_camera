@@ -13,6 +13,8 @@ import (
 	"go.viam.com/rdk/resource"
 	"go.viam.com/rdk/rimage/transform"
 	"go.viam.com/rdk/services/vision"
+	"go.viam.com/rdk/vision/classification"
+	"go.viam.com/rdk/vision/objectdetection"
 
 	"github.com/viamrobotics/gostream"
 	"go.viam.com/utils"
@@ -26,6 +28,53 @@ type Config struct {
 
 	Classifications map[string]float64
 	Objects         map[string]float64
+}
+
+func (cfg *Config) keepClassifications(cs []classification.Classification) bool {
+	for _, c := range cs {
+		if cfg.keepClassification(c) {
+			return true
+		}
+	}
+	return false
+}
+
+func (cfg *Config) keepClassification(c classification.Classification) bool {
+	min, has := cfg.Classifications[c.Label()]
+	if has && c.Score() > min {
+		return true
+	}
+
+	min, has = cfg.Classifications["*"]
+	if has && c.Score() > min {
+		return true
+	}
+
+	return false
+}
+
+func (cfg *Config) keepObjects(ds []objectdetection.Detection) bool {
+	for _, d := range ds {
+		if cfg.keepObject(d) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (cfg *Config) keepObject(d objectdetection.Detection) bool {
+	min, has := cfg.Objects[d.Label()]
+	if has && d.Score() > min {
+		return true
+	}
+
+	min, has = cfg.Objects["*"]
+	if has && d.Score() > min {
+		return true
+	}
+
+	return false
 }
 
 func (cfg *Config) Validate(path string) ([]string, error) {
@@ -157,11 +206,8 @@ func (fc *filteredCamera) shouldSend(ctx context.Context, img image.Image) (bool
 			return false, err
 		}
 
-		for _, c := range res {
-			min, has := fc.conf.Classifications[c.Label()]
-			if has && c.Score() > min {
-				return true, nil
-			}
+		if fc.conf.keepClassifications(res) {
+			return true, nil
 		}
 	}
 
@@ -171,11 +217,8 @@ func (fc *filteredCamera) shouldSend(ctx context.Context, img image.Image) (bool
 			return false, err
 		}
 
-		for _, d := range res {
-			min, has := fc.conf.Objects[d.Label()]
-			if has && d.Score() > min {
-				return true, nil
-			}
+		if fc.conf.keepObjects(res) {
+			return true, nil
 		}
 	}
 

@@ -33,6 +33,10 @@ func (s *dummyVisionService) Detections(ctx context.Context, img image.Image, ex
 		return []objectdetection.Detection{objectdetection.NewDetection(image.Rect(1, 1, 1, 1), .9, "b")}, nil
 	}
 
+	if img == f {
+		return []objectdetection.Detection{objectdetection.NewDetection(image.Rect(1, 1, 1, 1), .9, "f")}, nil
+	}
+
 	return []objectdetection.Detection{}, nil
 }
 
@@ -60,6 +64,10 @@ func (s *dummyVisionService) Classifications(
 		return classification.Classifications{classification.NewClassification(.1, "a")}, nil
 	}
 
+	if img == e {
+		return classification.Classifications{classification.NewClassification(.9, "e")}, nil
+	}
+
 	return classification.Classifications{}, nil
 }
 
@@ -72,6 +80,8 @@ var (
 	b = image.NewGray(image.Rect(2, 1, 1, 1))
 	c = image.NewGray(image.Rect(3, 1, 1, 1))
 	d = image.NewGray(image.Rect(4, 1, 1, 1))
+	e = image.NewGray(image.Rect(5, 1, 1, 1))
+	f = image.NewGray(image.Rect(6, 1, 1, 1))
 )
 
 func TestShouldSend(t *testing.T) {
@@ -98,4 +108,26 @@ func TestShouldSend(t *testing.T) {
 	res, err = fc.shouldSend(context.Background(), a)
 	test.That(t, err, test.ShouldBeNil)
 	test.That(t, res, test.ShouldEqual, true)
+
+	// test wildcard
+
+	res, err = fc.shouldSend(context.Background(), e)
+	test.That(t, err, test.ShouldBeNil)
+	test.That(t, res, test.ShouldEqual, false)
+
+	res, err = fc.shouldSend(context.Background(), f)
+	test.That(t, err, test.ShouldBeNil)
+	test.That(t, res, test.ShouldEqual, false)
+
+	fc.conf.Classifications["*"] = .8
+	fc.conf.Objects["*"] = .8
+
+	res, err = fc.shouldSend(context.Background(), e)
+	test.That(t, err, test.ShouldBeNil)
+	test.That(t, res, test.ShouldEqual, true)
+
+	res, err = fc.shouldSend(context.Background(), f)
+	test.That(t, err, test.ShouldBeNil)
+	test.That(t, res, test.ShouldEqual, true)
+
 }
