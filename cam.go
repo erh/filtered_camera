@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"image"
+	"sort"
+	"sync"
+	"time"
 
 	"github.com/edaniels/golog"
 
@@ -23,8 +26,9 @@ import (
 var Model = resource.ModelNamespace("erh").WithFamily("camera").WithModel("filtered-camera")
 
 type Config struct {
-	Camera string
-	Vision string
+	Camera        string
+	Vision        string
+	WindowSeconds int `json:"window_seconds"`
 
 	Classifications map[string]float64
 	Objects         map[string]float64
@@ -114,6 +118,11 @@ func init() {
 	})
 }
 
+type cachedData struct {
+	imgs []camera.NamedImage
+	meta resource.ResponseMetadata
+}
+
 type filteredCamera struct {
 	resource.AlwaysRebuild
 	resource.TriviallyCloseable
@@ -124,6 +133,11 @@ type filteredCamera struct {
 
 	cam camera.Camera
 	vis vision.Service
+
+	mu          sync.Mutex
+	buffer      []cachedData
+	toSend      []cachedData
+	captureTill time.Time
 }
 
 func (fc *filteredCamera) Name() resource.Name {
@@ -153,6 +167,17 @@ func (fc *filteredCamera) Images(ctx context.Context) ([]camera.NamedImage, reso
 		if shouldSend {
 			return images, meta, nil
 		}
+	}
+
+	fc.mu.Lock()
+	defer fc.mu.Unlock()
+
+	fc.addToBuffer_inlock(images, meta)
+
+	if len(fc.toSend) > 0 {
+		x := fc.toSend[0]
+		fc.toSend = fc.toSend[1:]
+		return x.imgs, x.meta, nil
 	}
 
 	return nil, meta, data.ErrNoCaptureToStore
@@ -192,11 +217,59 @@ func (fs filterStream) Next(ctx context.Context) (image.Image, func(), error) {
 		return img, release, nil
 	}
 
+	fs.fc.mu.Lock()
+	defer fs.fc.mu.Unlock()
+
+	fs.fc.addToBuffer_inlock([]camera.NamedImage{{img, ""}}, resource.ResponseMetadata{CapturedAt: time.Now()})
+
 	return nil, nil, data.ErrNoCaptureToStore
+}
+
+func (fc *filteredCamera) addToBuffer_inlock(imgs []camera.NamedImage, meta resource.ResponseMetadata) {
+	if fc.conf.WindowSeconds == 0 {
+		return
+	}
+
+	fc.cleanBuffer_inlock()
+	fc.buffer = append(fc.buffer, cachedData{imgs, meta})
 }
 
 func (fs filterStream) Close(ctx context.Context) error {
 	return fs.cameraStream.Close(ctx)
+}
+
+func (fc filteredCamera) windowDuration() time.Duration {
+	return time.Second * time.Duration(fc.conf.WindowSeconds)
+}
+
+func (fc *filteredCamera) cleanBuffer_inlock() {
+	sort.Slice(fc.buffer, func(i, j int) bool {
+		a := fc.buffer[i]
+		b := fc.buffer[j]
+		return a.meta.CapturedAt.Before(b.meta.CapturedAt)
+	})
+
+	early := time.Now().Add(-1 * fc.windowDuration())
+	for len(fc.buffer) > 0 {
+		if fc.buffer[0].meta.CapturedAt.After(early) {
+			return
+		}
+		fc.buffer = fc.buffer[1:]
+	}
+}
+
+func (fc *filteredCamera) markShouldSend() {
+	fc.mu.Lock()
+	defer fc.mu.Unlock()
+
+	fc.captureTill = time.Now().Add(fc.windowDuration())
+	fc.cleanBuffer_inlock()
+
+	for _, x := range fc.buffer {
+		fc.toSend = append(fc.toSend, x)
+	}
+
+	fc.buffer = []cachedData{}
 }
 
 func (fc *filteredCamera) shouldSend(ctx context.Context, img image.Image) (bool, error) {
@@ -209,6 +282,7 @@ func (fc *filteredCamera) shouldSend(ctx context.Context, img image.Image) (bool
 
 		if fc.conf.keepClassifications(res) {
 			fc.logger.Infof("keeping image with classifications %v", res)
+			fc.markShouldSend()
 			return true, nil
 		}
 	}
@@ -221,8 +295,14 @@ func (fc *filteredCamera) shouldSend(ctx context.Context, img image.Image) (bool
 
 		if fc.conf.keepObjects(res) {
 			fc.logger.Infof("keeping image with objects %v", res)
+			fc.markShouldSend()
 			return true, nil
 		}
+	}
+
+	if time.Now().Before(fc.captureTill) {
+		// send, but don't update captureTill
+		return true, nil
 	}
 
 	return false, nil

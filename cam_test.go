@@ -4,6 +4,7 @@ import (
 	"context"
 	"image"
 	"testing"
+	"time"
 
 	"github.com/edaniels/golog"
 
@@ -134,5 +135,51 @@ func TestShouldSend(t *testing.T) {
 	res, err = fc.shouldSend(context.Background(), f)
 	test.That(t, err, test.ShouldBeNil)
 	test.That(t, res, test.ShouldEqual, true)
+
+}
+
+func TestWindow(t *testing.T) {
+	logger := golog.NewTestLogger(t)
+
+	fc := &filteredCamera{
+		conf: &Config{
+			Classifications: map[string]float64{"a": .8},
+			Objects:         map[string]float64{"b": .8},
+			WindowSeconds:   10,
+		},
+		logger: logger,
+		vis:    &dummyVisionService{},
+	}
+
+	a := time.Now()
+	b := time.Now().Add(-1 * time.Second)
+	c := time.Now().Add(-1 * time.Minute)
+
+	fc.buffer = []cachedData{
+		{meta: resource.ResponseMetadata{CapturedAt: a}},
+		{meta: resource.ResponseMetadata{CapturedAt: b}},
+		{meta: resource.ResponseMetadata{CapturedAt: c}},
+	}
+
+	fc.markShouldSend()
+
+	test.That(t, len(fc.buffer), test.ShouldEqual, 0)
+	test.That(t, len(fc.toSend), test.ShouldEqual, 2)
+	test.That(t, b, test.ShouldEqual, fc.toSend[0].meta.CapturedAt)
+	test.That(t, a, test.ShouldEqual, fc.toSend[1].meta.CapturedAt)
+
+	fc.buffer = []cachedData{
+		{meta: resource.ResponseMetadata{CapturedAt: c}},
+		{meta: resource.ResponseMetadata{CapturedAt: b}},
+		{meta: resource.ResponseMetadata{CapturedAt: a}},
+	}
+	fc.toSend = []cachedData{}
+
+	fc.markShouldSend()
+
+	test.That(t, len(fc.buffer), test.ShouldEqual, 0)
+	test.That(t, len(fc.toSend), test.ShouldEqual, 2)
+	test.That(t, b, test.ShouldEqual, fc.toSend[0].meta.CapturedAt)
+	test.That(t, a, test.ShouldEqual, fc.toSend[1].meta.CapturedAt)
 
 }
