@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"image"
 	"sort"
+	"strings"
+	"regexp"
 	"sync"
 	"time"
 
@@ -53,6 +55,17 @@ func (cfg *Config) keepClassification(c classification.Classification) bool {
 	if has && c.Score() > min {
 		return true
 	}
+	// check for substring match
+	for key, _ := range cfg.Classifications {
+		if strings.Contains(key, "*") {
+			if match, err := regexp.MatchString(key, c.Label()); match {
+				if err != nil {
+					continue
+				}
+				return true
+			}
+		}
+	}
 
 	return false
 }
@@ -77,7 +90,17 @@ func (cfg *Config) keepObject(d objectdetection.Detection) bool {
 	if has && d.Score() > min {
 		return true
 	}
-
+	// check for substring match
+	for key, _ := range cfg.Objects {
+		if strings.Contains(key, "*") {
+			if match, err := regexp.MatchString(key, d.Label()); match {
+				if err != nil {
+					continue
+				}
+				return true
+			}
+		}
+	}
 	return false
 }
 
