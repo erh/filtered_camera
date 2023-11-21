@@ -17,7 +17,7 @@ https://app.viam.com/module/erh/filtered-camera
   "camera": "my-cam",
   "vision": "my-vision-service",
   "classifications": {
-    "COUNTDOWN*": 0.5,
+    "COUNTDOWN*": 0.6,
     "ALARM": 0.5
   },
   "detections": {
@@ -25,6 +25,6 @@ https://app.viam.com/module/erh/filtered-camera
   }
 }
 ```
-For example, this config would save all images with a classification label that exactly matched "ALARM" or partially matched "COUNTDOWN", e.g. "COUNTDOWN: 10 s remain!". It would also save all images that had any detection with a confidence above 0.85.  
+For example, this config would save all images with a classification label that exactly matched "ALARM" with greater than 0.5 confidence, or partially matched "COUNTDOWN", e.g. "COUNTDOWN: 10 s remain!" with greater than 0.6 confidence. It would also save all images that had any detection with a confidence above 0.85.  
 
 
