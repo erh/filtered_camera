@@ -25,14 +25,14 @@ On the new component panel, copy and paste the following attribute template into
 {
     "camera": "<your_camera_name>",
     "vision": "<your_vision_service_name>",
-    "WindowSeconds": <time_window_for_capture>,
-    "Classifications": {
-        "label": <confidence_score>,
-        "label": <confidence_score>
+    "window_seconds": <time_window_for_capture>,
+    "classifications": {
+        "<label>": <confidence_score>,
+        "<label>": <confidence_score>
     },
-    "Objects": {
-        "label": <confidence_score>,
-        "label": <confidence_score>
+    "objects": {
+        "<label>": <confidence_score>,
+        "<label>": <confidence_score>
     }
 }
 ```
@@ -48,11 +48,11 @@ The following attributes are available for `erh:camera:filtered-camera` bases:
 | ---- | ------ | ------------ | ----------- |
 | `camera` | string | **Required** | The name of the camera to filter images for. |
 | `vision` | string | **Required** | The vision service used for image classifications or detections. |
-| `WindowSeconds` | float64 | Optional | The size of the time window during which images are buffered. When a condition is met, a confidence score for a detection/classification exceeds the required confidence score, the buffered images are stored, allowing us to see the photos taken in the N number of seconds preceding the condition being met.
+| `window_seconds` | float64 | Optional | The size of the time window during which images are buffered. When a condition is met, a confidence score for a detection/classification exceeds the required confidence score, the buffered images are stored, allowing us to see the photos taken in the N number of seconds preceding the condition being met.
 in seconds for capturing and sending images. |
-| `Classifications` | float64 | Optional | A map of
+| `classifications` | float64 | Optional | A map of
 classification labels and the confidence scores required for filtering. |
-| `Objects` | float64 | Optional | A map of object detection
+| `objects` | float64 | Optional | A map of object detection
 labels and the confidence scores required for filtering. |
 
 ### Example configurations:
@@ -61,8 +61,8 @@ labels and the confidence scores required for filtering. |
 {
     "camera": "my_camera",
     "vision": "my_red_car_detector",
-    "WindowSeconds": 5,
-    "Objects": {
+    "windowSeconds": 5,
+    "objects": {
         "red_car": 0.6
     }
 }
