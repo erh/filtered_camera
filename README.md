@@ -7,8 +7,8 @@ This module allows you to filter image data by:
 - Detected objects and their associated required confidence scores
 
 This allows you to:
-- Classify images and only sync some
-- Look for objects in an image and sync the images that have a certain object.
+- Classify images and only sync images that have the required label
+- Look for objects in an image and sync the images that have a certain object
 
 This module also allows you to specifcy a time window for syncing the data captured in the N seconds before the capture criteria were met.
 
