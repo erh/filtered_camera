@@ -4,9 +4,8 @@ import (
 	"context"
 	"os"
 
-	"github.com/edaniels/golog"
-
 	"go.viam.com/rdk/config"
+	"go.viam.com/rdk/logging"
 	robotimpl "go.viam.com/rdk/robot/impl"
 	"go.viam.com/rdk/robot/web"
 
@@ -22,7 +21,7 @@ func main() {
 func realMain() error {
 
 	ctx := context.Background()
-	logger := golog.NewDevelopmentLogger("remotetest")
+	logger := logging.NewDebugLogger("remotetest")
 
 	conf, err := config.ReadLocalConfig(ctx, os.Args[1], logger)
 	if err != nil {

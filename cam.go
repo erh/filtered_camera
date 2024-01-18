@@ -8,10 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/edaniels/golog"
-
 	"go.viam.com/rdk/components/camera"
 	"go.viam.com/rdk/data"
+	"go.viam.com/rdk/logging"
 	"go.viam.com/rdk/pointcloud"
 	"go.viam.com/rdk/resource"
 	"go.viam.com/rdk/rimage/transform"
@@ -19,7 +18,7 @@ import (
 	"go.viam.com/rdk/vision/classification"
 	"go.viam.com/rdk/vision/objectdetection"
 
-	"github.com/viamrobotics/gostream"
+	"go.viam.com/rdk/gostream"
 	"go.viam.com/utils"
 )
 
@@ -95,7 +94,7 @@ func (cfg *Config) Validate(path string) ([]string, error) {
 
 func init() {
 	resource.RegisterComponent(camera.API, Model, resource.Registration[camera.Camera, *Config]{
-		Constructor: func(ctx context.Context, deps resource.Dependencies, conf resource.Config, logger golog.Logger) (camera.Camera, error) {
+		Constructor: func(ctx context.Context, deps resource.Dependencies, conf resource.Config, logger logging.Logger) (camera.Camera, error) {
 			newConf, err := resource.NativeConfig[*Config](conf)
 			if err != nil {
 				return nil, err
@@ -129,7 +128,7 @@ type filteredCamera struct {
 
 	name   resource.Name
 	conf   *Config
-	logger golog.Logger
+	logger logging.Logger
 
 	cam camera.Camera
 	vis vision.Service
@@ -154,7 +153,8 @@ func (fc *filteredCamera) Images(ctx context.Context) ([]camera.NamedImage, reso
 		return images, meta, err
 	}
 
-	if ctx.Value(data.FromDMContextKey{}) != true {
+	extra, ok := camera.FromContext(ctx)
+	if !ok || extra[data.FromDMString] != true {
 		return images, meta, nil
 	}
 
@@ -198,7 +198,8 @@ type filterStream struct {
 }
 
 func (fs filterStream) Next(ctx context.Context) (image.Image, func(), error) {
-	if ctx.Value(data.FromDMContextKey{}) != true {
+	extra, ok := camera.FromContext(ctx)
+	if !ok || extra[data.FromDMString] != true {
 		// If not data management collector, return underlying stream contents without filtering.
 		return fs.cameraStream.Next(ctx)
 	}
