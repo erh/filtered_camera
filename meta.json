@@ -9,5 +9,9 @@
             "model": "erh:camera:filtered-camera"
         }
     ],
+    "build": {
+        "build": "make module",
+        "arch" : ["linux/amd64", "linux/arm64", "darwin/arm64"]
+    },
     "entrypoint": "filtered-camera"
 }
