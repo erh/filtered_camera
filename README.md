@@ -42,7 +42,7 @@ On the new component panel, copy and paste the following attribute template into
 
 ### Attributes
 
-The following attributes are available for `erh:camera:filtered-camera` bases:
+The following attributes are available for `erh:camera:filtered-camera`:
 
 | Name | Type | Inclusion | Description |
 | ---- | ------ | ------------ | ----------- |
