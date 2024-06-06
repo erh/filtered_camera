@@ -19,7 +19,7 @@ This module also allows you to specifcy a time window for syncing the data captu
 
 Navigate to the **Config** tab of your robot’s page in [the Viam app](https://app.viam.com/). Click on the **Components** subtab and click **Create component**. Select the `camera` type, then select the [`filtered-camera` model](https://app.viam.com/module/erh/filtered-camera) and click **Add module**. Enter a name for your camera and click **Create**.
 
-On the new component panel, copy and paste the following attribute template into your base’s **Attributes** box. 
+On the new component panel, copy and paste the following attribute template into your camera’s **Attributes** box. 
 
 ```json
 {
