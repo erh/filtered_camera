@@ -48,12 +48,9 @@ The following attributes are available for `erh:camera:filtered-camera`:
 | ---- | ------ | ------------ | ----------- |
 | `camera` | string | **Required** | The name of the camera to filter images for. |
 | `vision` | string | **Required** | The vision service used for image classifications or detections. |
-| `window_seconds` | float64 | Optional | The size of the time window during which images are buffered. When a condition is met, a confidence score for a detection/classification exceeds the required confidence score, the buffered images are stored, allowing us to see the photos taken in the N number of seconds preceding the condition being met.
-in seconds for capturing and sending images. |
-| `classifications` | float64 | Optional | A map of
-classification labels and the confidence scores required for filtering. |
-| `objects` | float64 | Optional | A map of object detection
-labels and the confidence scores required for filtering. |
+| `window_seconds` | float64 | Optional | The size of the time window (in seconds) during which images are buffered. When a condition is met, a confidence score for a detection/classification exceeds the required confidence score, the buffered images are stored, allowing us to see the photos taken in the N number of seconds preceding the condition being met. |
+| `classifications` | float64 | Optional | A map of classification labels and the confidence scores required for filtering. |
+| `objects` | float64 | Optional | A map of object detection labels and the confidence scores required for filtering. |
 
 ### Example configurations:
 
