@@ -15,11 +15,12 @@ This module also allows you to specifcy a time window for syncing the data captu
 ## Configure your filtered camera
 
 > [!NOTE]  
-> Before configuring your camera, you must [create a robot](https://docs.viam.com/manage/fleet/robots/#add-a-new-robot).
+> Before configuring your camera, you must [create a machine](https://docs.viam.com/manage/fleet/robots/#add-a-new-machine).
 
-Navigate to the **Config** tab of your robot’s page in [the Viam app](https://app.viam.com/). Click on the **Components** subtab and click **Create component**. Select the `camera` type, then select the [`filtered-camera` model](https://app.viam.com/module/erh/filtered-camera) and click **Add module**. Enter a name for your camera and click **Create**.
+Navigate to the **CONFIGURE** tab of your machine’s page in [the Viam app](https://app.viam.com/).
+[Add `camera` / `filtered-camera` to your machine](https://docs.viam.com/configure/#components).
 
-On the new component panel, copy and paste the following attribute template into your base’s **Attributes** box. 
+On the new component panel, copy and paste the following attribute template into your camera’s **Attributes** box. 
 
 ```json
 {
@@ -37,8 +38,10 @@ On the new component panel, copy and paste the following attribute template into
 }
 ```
 
+Remove the "classifications" or "objects" section depending on if your ML model is a classifier or detector.
+
 > [!NOTE]  
-> For more information, see [Configure a Robot](https://docs.viam.com/manage/configuration/).
+> For more information, see [Configure a Machine](https://docs.viam.com/configure/).
 
 ### Attributes
 
@@ -48,12 +51,9 @@ The following attributes are available for `erh:camera:filtered-camera` bases:
 | ---- | ------ | ------------ | ----------- |
 | `camera` | string | **Required** | The name of the camera to filter images for. |
 | `vision` | string | **Required** | The vision service used for image classifications or detections. |
-| `window_seconds` | float64 | Optional | The size of the time window during which images are buffered. When a condition is met, a confidence score for a detection/classification exceeds the required confidence score, the buffered images are stored, allowing us to see the photos taken in the N number of seconds preceding the condition being met.
-in seconds for capturing and sending images. |
-| `classifications` | float64 | Optional | A map of
-classification labels and the confidence scores required for filtering. |
-| `objects` | float64 | Optional | A map of object detection
-labels and the confidence scores required for filtering. |
+| `window_seconds` | float64 | Optional | The size of the time window (in seconds) during which images are buffered. When a condition is met, a confidence score for a detection/classification exceeds the required confidence score, the buffered images are stored, allowing us to see the photos taken in the N number of seconds preceding the condition being met. |
+| `classifications` | float64 | Optional | A map of classification labels and the confidence scores required for filtering. Use this if the ML model behind your vision service is a classifier. You can find these labels by testing your vision service. |
+| `objects` | float64 | Optional | A map of object detection labels and the confidence scores required for filtering. Use this if the ML model behind your vision service is a detector. You can find these labels by testing your vision service. |
 
 ### Example configurations:
 
@@ -82,12 +82,12 @@ the [module’s executable
 path](/registry/create/#prepare-the-module-for-execution, then click
 **Add module**.
 The name must use only lowercase characters.
-Then, click **Save config**.
+Then, click **Save** in the top right corner of the screen.
 
 ## Next Steps
 
-- To test your camera, go to the [**Control** tab](https://docs.viam.com/manage/fleet/robots/#control).
-- To test that your camera's images are filtering correctly, [go to the **Data** tab](https://docs.viam.com/data/view/).
+- To test your camera, go to the [**CONTROL** tab](https://docs.viam.com/manage/fleet/robots/#control).
+- To test that your camera's images are filtering correctly after [configuring data capture](https://docs.viam.com/services/data/capture/), [go to the **DATA** tab](https://docs.viam.com/data/view/).
 
 ## License
 Copyright 2021-2023 Viam Inc. <br>
