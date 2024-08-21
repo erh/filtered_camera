@@ -38,7 +38,7 @@ On the new component panel, copy and paste the following attribute template into
 }
 ```
 
-Remove the "classifications" or "objects" section depending on if your model is a classifier or detector.
+Remove the "classifications" or "objects" section depending on if your ML model is a classifier or detector.
 
 > [!NOTE]  
 > For more information, see [Configure a Machine](https://docs.viam.com/configure/).
