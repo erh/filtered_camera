@@ -89,7 +89,7 @@ Then, click **Save** in the top right corner of the screen.
 
 ## Next Steps
 
-- To test your camera, go to the [**SCREEN** tab](https://docs.viam.com/manage/fleet/robots/#control).
+- To test your camera, go to the [**CONTROL** tab](https://docs.viam.com/manage/fleet/robots/#control).
 - To test that your camera's images are filtering correctly after [configuring data capture](https://docs.viam.com/services/data/capture/), [go to the **DATA** tab](https://docs.viam.com/data/view/).
 
 ## License
