@@ -53,10 +53,8 @@ The following attributes are available for `erh:camera:filtered-camera` bases:
 | `vision` | string | **Required** | The vision service used for image classifications or detections. |
 | `window_seconds` | float64 | Optional | The size of the time window during which images are buffered. When a condition is met, a confidence score for a detection/classification exceeds the required confidence score, the buffered images are stored, allowing us to see the photos taken in the N number of seconds preceding the condition being met.
 in seconds for capturing and sending images. |
-| `classifications` | float64 | Optional | A map of
-classification labels and the confidence scores required for filtering. Use this if the ML model behind your vision service is a classifier. You can find these labels by testing your vision service. |
-| `objects` | float64 | Optional | A map of object detection
-labels and the confidence scores required for filtering. Use this if the ML model behind your vision service is a detector. You can find these labels by testing your vision service. |
+| `classifications` | float64 | Optional | A map of classification labels and the confidence scores required for filtering. Use this if the ML model behind your vision service is a classifier. You can find these labels by testing your vision service. |
+| `objects` | float64 | Optional | A map of object detection labels and the confidence scores required for filtering. Use this if the ML model behind your vision service is a detector. You can find these labels by testing your vision service. |
 
 ### Example configurations:
 
