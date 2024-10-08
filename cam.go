@@ -13,7 +13,6 @@ import (
 	"go.viam.com/rdk/logging"
 	"go.viam.com/rdk/pointcloud"
 	"go.viam.com/rdk/resource"
-	"go.viam.com/rdk/rimage/transform"
 	"go.viam.com/rdk/services/vision"
 	"go.viam.com/rdk/vision/classification"
 	"go.viam.com/rdk/vision/objectdetection"
@@ -319,8 +318,4 @@ func (fc *filteredCamera) Properties(ctx context.Context) (camera.Properties, er
 		p.SupportsPCD = false
 	}
 	return p, err
-}
-
-func (fc *filteredCamera) Projector(ctx context.Context) (transform.Projector, error) {
-	return fc.cam.Projector(ctx)
 }
